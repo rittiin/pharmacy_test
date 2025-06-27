@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ Track เอกสารการเงิน - เภสัช</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Section */
+        .login-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .login-form {
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Main App Styles */
+        .app-section {
+            display: none;
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1001;
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            gap: 10px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Page containers */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Styles */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Status Chart Styles */
+        .status-chart {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .chart-label {
+            min-width: 200px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            position: relative;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .chart-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .add-document {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .progress-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .progress-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .document-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .document-meta {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .current-step {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-percentage {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        .status-0 { background: #ffebee; color: #c62828; }
+        .status-1 { background: #fff3e0; color: #ef6c00; }
+        .status-2 { background: #e8f5e8; color: #2e7d32; }
+        .status-3 { background: #e3f2fd; color: #1565c0; }
+        .status-4 { background: #f3e5f5; color: #7b1fa2; }
+        .status-5 { background: #e0f2f1; color: #00695c; }
+        .status-6 { background: #fff8e1; color: #f57f17; }
+        .status-7 { background: #fce4ec; color: #ad1457; }
+        .status-8 { background: #e1f5fe; color: #0277bd; }
+        .status-9 { background: #f1f8e9; color: #558b2f; }
+        .status-10 { background: #e8f5e8; color: #2e7d32; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .btn-save {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(45deg, #9E9E9E, #757575);
+            color: white;
+        }
+
+        .btn-search {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-clear {
+            background: linear-gradient(45deg, #9E9E9E, #757575);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .steps-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .step-icon.completed {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .step-icon.current {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .step-icon.pending {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        .step-text {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .step-text.completed {
+            color: #4CAF50;
+        }
+
+        .step-text.current {
+            color: #FF9800;
+            font-weight: 600;
+        }
+
+        .step-text.pending {
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            opacity: 0.8;
+        }
+
+        .note-display {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tab {
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+            
+            .form-grid, .search-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 10px;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+
+            .chart-label {
+                min-width: 150px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-card">
+            <div class="login-logo">🏥</div>
+            <h2 class="login-title">เข้าสู่ระบบ</h2>
+            <p class="login-subtitle">ระบบ Track เอกสารการเงิน - เภสัชกรรม</p>
+            
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <label for="username">ชื่อผู้ใช้</label>
+                    <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required>
+                </div>
+                <button type="submit" class="login-btn">🔐 เข้าสู่ระบบ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Section -->
+    <div class="app-section" id="appSection">
+        <div class="connection-status">
+            ☁️ เชื่อมต่อ Google Sheets แล้ว
+        </div>
+
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>📊 ระบบ Track เอกสารการเงิน</h1>
+                    <p>เภสัชกรรม - ติดตามสถานะการเงินแบบ Real-time</p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <span>👤</span>
+                        <span id="currentUser">ผู้ใช้งาน</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">🚪 ออกจากระบบ</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showPage('dashboard')">
+                    📊 Dashboard & เพิ่มข้อมูล
+                </button>
+                <button class="nav-tab" onclick="showPage('table')">
+                    📋 ตารางรายการทั้งหมด
+                </button>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalDocs">0</div>
+                        <div class="stat-label">เอกสารทั้งหมด</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedDocs">0</div>
+                        <div class="stat-label">เสร็จสิ้น</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingDocs">0</div>
+                        <div class="stat-label">กำลังดำเนินการ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgProgress">0%</div>
+                        <div class="stat-label">ความคืบหน้าเฉลี่ย</div>
+                    </div>
+                </div>
+
+                <!-- Status Chart Section -->
+                <div class="status-chart">
+                    <h3 style="margin-bottom: 20px; color: #333;">📊 สถานะเอกสาร</h3>
+                    <div class="chart-container" id="statusChart">
+                        <!-- Chart bars will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="add-document">
+                    <h3 style="margin-bottom: 20px; color: #333;">➕ เพิ่มเอกสารใหม่</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="docBillNumber">เลขที่บิล *</label>
+                            <input type="text" id="docBillNumber" placeholder="เช่น INV-2024-001">
+                        </div>
+                        <div class="input-group">
+                            <label for="docType">ประเภท</label>
+                            <select id="docType">
+                                <option value="ยา">ยา</option>
+                                <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                                <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="docAmount">จำนวนเงิน (บาท)</label>
+                            <input type="number" id="docAmount" placeholder="เช่น 15000" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label for="docCompany">บริษัท</label>
+                            <input type="text" id="docCompany" placeholder="เช่น บริษัท ABC จำกัด">
+                        </div>
+                        <div class="input-group">
+                            <label for="docReceiveDate">วันที่รับเข้า/วันก่อหนี้</label>
+                            <input type="date" id="docReceiveDate">
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label for="docNote">หมายเหตุ</label>
+                        <textarea id="docNote" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="addDocBtn">
+                        ➕ เพิ่มเอกสาร
+                    </button>
+                </div>
+
+                <!-- Search Section for Dashboard -->
+                <div class="search-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">🔍 ค้นหาและกรองข้อมูล</h3>
+                    <div class="search-grid">
+                        <input type="text" id="dashboardSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
+                        <select id="dashboardSearchType" class="search-input">
+                            <option value="">ทุกประเภท</option>
+                            <option value="ยา">ยา</option>
+                            <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                            <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                        <input type="text" id="dashboardSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
+                    </div>
+                    <div class="search-buttons">
+                        <button class="btn btn-search" onclick="searchDocuments()">🔍 ค้นหา</button>
+                        <button class="btn btn-clear" onclick="clearSearch()">🗑️ ล้างการค้นหา</button>
+                    </div>
+                </div>
+
+                <h3 style="color: white; margin-bottom: 20px;" id="overviewTitle">📈 ภาพรวมความคืบหน้า</h3>
+                <div class="overview-grid" id="overviewGrid">
+                    <div class="empty-state">
+                        <h3>📋 ยังไม่มีเอกสารในระบบ</h3>
+                        <p>เริ่มต้นโดยการเพิ่มเอกสารแรกของคุณ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Page -->
+            <div id="table" class="page">
+                <!-- Search Section for Table -->
+                <div class="search-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">🔍 ค้นหาเอกสาร</h3>
+                    <div class="search-grid">
+                        <input type="text" id="tableSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
+                        <select id="tableSearchType" class="search-input">
+                            <option value="">ทุกประเภท</option>
+                            <option value="ยา">ยา</option>
+                            <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                            <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                        <input type="text" id="tableSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
+                    </div>
+                    <div class="search-buttons">
+                        <button class="btn btn-search" onclick="searchTable()">🔍 ค้นหา</button>
+                        <button class="btn btn-clear" onclick="clearTableSearch()">🗑️ ล้างการค้นหา</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin: 0;">📋 ตารางรายการเอกสารทั้งหมด</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" onclick="refreshData()" style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white;">
+                                🔄 รีเฟรช
+                            </button>
+                        </div>
+                    </div>
+                    <table class="data-table" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>เลขที่บิล</th>
+                                <th>ประเภท</th>
+                                <th>จำนวนเงิน</th>
+                                <th>สถานะปัจจุบัน</th>
+                                <th>ความคืบหน้า</th>
+                                <th>วันที่รับเข้า</th>
+                                <th>หมายเหตุ</th>
+                                <th>การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                                    📪 ยังไม่มีข้อมูลในระบบ
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">✏️ แก้ไขเอกสาร</h3>
+                        <button class="close-btn" id="closeModalBtn">&times;</button>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="editDocBillNumber">เลขที่บิล</label>
+                            <input type="text" id="editDocBillNumber">
+                        </div>
+                        <div class="input-group">
+                            <label for="editDocType">ประเภท</label>
+                            <select id="editDocType">
+                                <option value="ยา">ยา</option>
+                                <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                                <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="editDocAmount">จำนวนเงิน (บาท)</label>
+                            <input type="number" id="editDocAmount" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label for="editDocCompany">บริษัท</label>
+                            <input type="text" id="editDocCompany">
+                        </div>
+                        <div class="input-group">
+                            <label for="editDocReceiveDate">วันที่รับเข้า/วันก่อหนี้</label>
+                            <input type="date" id="editDocReceiveDate">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group" style="margin: 20px 0;">
+                        <label for="editDocNote">หมายเหตุ</label>
+                        <textarea id="editDocNote"></textarea>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label for="editDocStatus">สถานะปัจจุบัน</label>
+                        <select id="editDocStatus">
+                            <option value="0">1. ลงรับของเข้าคลัง</option>
+                            <option value="1">2. ก่อหนี้</option>
+                            <option value="2">3. ทำชุดเอกสาร</option>
+                            <option value="3">4. ลง e-gp ขั้น 1</option>
+                            <option value="4">5. ลง e-gp ขั้น 2</option>
+                            <option value="5">6. จัดเรียงชุดเอกสาร</option>
+                            <option value="6">7. เสนอกรรมการเซ็นต์</option>
+                            <option value="7">8. จนท.คลังเซ็นต์</option>
+                            <option value="8">9. เสนอหัวหน้าประจงจิตรเซ็นต์</option>
+                            <option value="9">10. เสนอ ผอ.เซ็นต์</option>
+                            <option value="10">11. ส่งการเงิน / เสร็จสิ้น</option>
+                        </select>
+                    </div>
+
+                    <h4 style="margin-bottom: 15px; color: #333;">ขั้นตอนการดำเนินงาน</h4>
+                    <ul class="steps-list" id="modalStepsList">
+                        <!-- Steps will be rendered here -->
+                    </ul>
+
+                    <div class="btn-group" style="margin-top: 25px;">
+                        <button class="btn btn-save" id="saveEditBtn">
+                            💾 บันทึกการแก้ไข
+                        </button>
+                        <button class="btn btn-cancel" id="cancelEditBtn">
+                            ❌ ยกเลิก
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const steps = [
+            'ลงรับของเข้าคลัง',
+            'ก่อหนี้',
+            'ทำชุดเอกสาร',
+            'ลง e-gp ขั้น 1',
+            'ลง e-gp ขั้น 2',
+            'จัดเรียงชุดเอกสาร',
+            'เสนอกรรมการเซ็นต์',
+            'จนท.คลังเซ็นต์',
+            'เสนอหัวหน้าประจงจิตรเซ็นต์',
+            'เสนอ ผอ.เซ็นต์',
+            'ส่งการเงิน / เสร็จสิ้น'
+        ];
+
+        let documents = [];
+        let filteredDocuments = [];
+        let nextId = 1;
+        let editingDocId = null;
+        let isLoggedIn = false;
+        let currentUser = '';
+        let isSearching = false;
+
+        // Memory storage instead of localStorage (for sandboxed environments)
+        const memoryStorage = {
+            data: {},
+            setItem: function(key, value) {
+                this.data[key] = value;
+            },
+            getItem: function(key) {
+                return this.data[key] || null;
+            },
+            removeItem: function(key) {
+                delete this.data[key];
+            }
+        };
+
+        // Safe storage wrapper
+        function getStorage() {
+            try {
+                // Test if localStorage is available
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return localStorage;
+            } catch (e) {
+                console.log('localStorage not available, using memory storage');
+                return memoryStorage;
+            }
+        }
+
+        const storage = getStorage();
+
+        // Google Sheets configuration (hardcoded for production)
+        const sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbzPP-OC0YZrcCiYvKUI0R7H8xl8nmOy70GWnej3osG2IeJlojl_TUVjHiW-g_QSeyCF/exec';
+
+        // Secure login system with hashed passwords
+        const VALID_USERS = {
+            // Username: SHA-256 hash of password
+            'admin': '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', // "hello"
+            // To generate new hash: console.log(await hashPassword('your_password'))
+        };
+
+        // Hash password function using Web Crypto API
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Secure login function
+        async function login(username, password) {
+            try {
+                const hashedPassword = await hashPassword(password);
+                
+                if (VALID_USERS[username] && VALID_USERS[username] === hashedPassword) {
+                    isLoggedIn = true;
+                    currentUser = username;
+                    
+                    // Save login state
+                    storage.setItem('isLoggedIn', 'true');
+                    storage.setItem('currentUser', username);
+                    
+                    // Show app, hide login
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('appSection').classList.add('active');
+                    document.getElementById('currentUser').textContent = username;
+                    
+                    // Load data after login
+                    loadDataFromSheets();
+                    
+                    return true;
+                } else {
+                    alert('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('❌ เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+                return false;
+            }
+        }
+
+        function logout() {
+            if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
+                isLoggedIn = false;
+                currentUser = '';
+                
+                // Clear login state
+                storage.removeItem('isLoggedIn');
+                storage.removeItem('currentUser');
+                
+                // Show login, hide app
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('appSection').classList.remove('active');
+                
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function checkLoginState() {
+            const savedLoginState = storage.getItem('isLoggedIn');
+            const savedUser = storage.getItem('currentUser');
+            
+            if (savedLoginState === 'true' && savedUser) {
+                isLoggedIn = true;
+                currentUser = savedUser;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('appSection').classList.add('active');
+                document.getElementById('currentUser').textContent = savedUser;
+                return true;
+            } else {
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('appSection').classList.remove('active');
+                return false;
+            }
+        }
+
+        // Search functions
+        function searchDocuments() {
+            const billNumber = document.getElementById('dashboardSearchBill').value.trim().toLowerCase();
+            const type = document.getElementById('dashboardSearchType').value;
+            const company = document.getElementById('dashboardSearchCompany').value.trim().toLowerCase();
+
+            if (!billNumber && !type && !company) {
+                alert('กรุณาใส่เงื่อนไขการค้นหาอย่างน้อย 1 รายการ');
+                return;
+            }
+
+            filteredDocuments = documents.filter(doc => {
+                const matchBill = !billNumber || doc.billNumber.toLowerCase().includes(billNumber);
+                const matchType = !type || doc.type === type;
+                const matchCompany = !company || (doc.company && doc.company.toLowerCase().includes(company));
+                
+                return matchBill && matchType && matchCompany;
+            });
+
+            isSearching = true;
+            updateOverviewTitle();
+            renderOverview();
+        }
+
+        function clearSearch() {
+            document.getElementById('dashboardSearchBill').value = '';
+            document.getElementById('dashboardSearchType').value = '';
+            document.getElementById('dashboardSearchCompany').value = '';
+            
+            filteredDocuments = [];
+            isSearching = false;
+            updateOverviewTitle();
+            renderOverview();
+        }
+
+        function searchTable() {
+            const billNumber = document.getElementById('tableSearchBill').value.trim().toLowerCase();
+            const type = document.getElementById('tableSearchType').value;
+            const company = document.getElementById('tableSearchCompany').value.trim().toLowerCase();
+
+            filteredDocuments = documents.filter(doc => {
+                const matchBill = !billNumber || doc.billNumber.toLowerCase().includes(billNumber);
+                const matchType = !type || doc.type === type;
+                const matchCompany = !company || (doc.company && doc.company.toLowerCase().includes(company));
+                
+                return matchBill && matchType && matchCompany;
+            });
+
+            renderTable(filteredDocuments);
+        }
+
+        function clearTableSearch() {
+            document.getElementById('tableSearchBill').value = '';
+            document.getElementById('tableSearchType').value = '';
+            document.getElementById('tableSearchCompany').value = '';
+            
+            filteredDocuments = [];
+            renderTable();
+        }
+
+        function updateOverviewTitle() {
+            const titleElement = document.getElementById('overviewTitle');
+            if (isSearching && filteredDocuments.length > 0) {
+                titleElement.textContent = `🔍 ผลการค้นหา (${filteredDocuments.length} รายการ)`;
+            } else if (isSearching && filteredDocuments.length === 0) {
+                titleElement.textContent = `🔍 ไม่พบผลการค้นหา`;
+            } else {
+                titleElement.textContent = `📈 ภาพรวมความคืบหน้า`;
+            }
+        }
+
+        // Status chart rendering
+        function renderStatusChart() {
+            if (!isLoggedIn) return;
+
+            const statusCounts = new Array(steps.length).fill(0);
+            const maxCount = Math.max(...statusCounts, 1);
+
+            documents.forEach(doc => {
+                if (doc.currentStep >= 0 && doc.currentStep < steps.length) {
+                    statusCounts[doc.currentStep]++;
+                }
+            });
+
+            const maxCountForChart = Math.max(...statusCounts, 1);
+
+            const chartContainer = document.getElementById('statusChart');
+            chartContainer.innerHTML = steps.map((step, index) => {
+                const count = statusCounts[index];
+                const percentage = maxCountForChart > 0 ? (count / maxCountForChart) * 100 : 0;
+                
+                return `
+                    <div class="chart-bar">
+                        <div class="chart-label">${index + 1}. ${step}</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="chart-value">${count}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Google Sheets functions
+        async function loadDataFromSheets() {
+            if (!isLoggedIn) return;
+            
+            try {
+                console.log('🔄 กำลังโหลดข้อมูลจาก Google Sheets...');
+                
+                let response;
+                let data;
+                
+                try {
+                    response = await fetch(sheetsApiUrl + '?action=read', {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        data = JSON.parse(text);
+                        console.log('✅ โหลดข้อมูลสำเร็จ:', data);
+                    }
+                } catch (corsError) {
+                    console.log('⚠️ CORS ล้มเหลว, ลองวิธีอื่น:', corsError.message);
+                    
+                    try {
+                        response = await fetch(sheetsApiUrl + '?action=read', {
+                            method: 'GET',
+                            mode: 'no-cors'
+                        });
+                        console.log('✅ ส่งคำขอสำเร็จ (no-cors mode)');
+                        data = { success: true, data: [] };
+                    } catch (noCorsError) {
+                        console.log('❌ no-cors ก็ล้มเหลว:', noCorsError.message);
+                        throw noCorsError;
+                    }
+                }
+                
+                if (data && data.success && data.data) {
+                    documents = data.data || [];
+                    if (documents.length > 0) {
+                        nextId = Math.max(...documents.map(doc => doc.id || 0)) + 1;
+                    }
+                    renderDashboard();
+                    renderTable();
+                    console.log('📊 โหลดข้อมูล', documents.length, 'รายการ');
+                } else {
+                    console.log('⚠️ ไม่พบข้อมูลใน Google Sheets, โหลดข้อมูลตัวอย่าง');
+                    initializeWithSampleData();
+                }
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล:', error);
+                initializeWithSampleData();
+            }
+        }
+
+        async function saveToSheets(action, data) {
+            if (!isLoggedIn) return;
+            
+            try {
+                console.log('💾 กำลังบันทึกข้อมูลไป Google Sheets...', action, data);
+                
+                const payload = {
+                    action: action,
+                    data: data
+                };
+
+                let success = false;
+                
+                try {
+                    const response = await fetch(sheetsApiUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            success = true;
+                            console.log('✅ บันทึกข้อมูลสำเร็จ');
+                        }
+                    }
+                } catch (corsError) {
+                    console.log('⚠️ POST CORS ล้มเหลว:', corsError.message);
+                }
+
+                if (!success) {
+                    try {
+                        await fetch(sheetsApiUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'text/plain',
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        console.log('✅ ส่งข้อมูลสำเร็จ (no-cors)');
+                        success = true;
+                    } catch (noCorsError) {
+                        console.log('❌ POST no-cors ล้มเหลว:', noCorsError.message);
+                    }
+                }
+
+                if (!success) {
+                    throw new Error('ไม่สามารถบันทึกข้อมูลได้');
+                }
+
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการบันทึก:', error);
+                console.log('💾 ใช้ Memory Storage สำรอง');
+                saveToLocalStorage();
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                storage.setItem('pharmacyDocs', JSON.stringify(documents));
+                storage.setItem('nextDocId', nextId.toString());
+            } catch (error) {
+                console.log('Error saving to storage:', error);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const savedDocs = storage.getItem('pharmacyDocs');
+                const savedNextId = storage.getItem('nextDocId');
+                
+                if (savedDocs) {
+                    documents = JSON.parse(savedDocs);
+                }
+                
+                if (savedNextId) {
+                    nextId = parseInt(savedNextId);
+                }
+                
+                return documents.length > 0;
+            } catch (error) {
+                console.log('Error loading from storage:', error);
+                return false;
+            }
+        }
+
+        // Main functions
+        async function addDocument() {
+            if (!isLoggedIn) return;
+
+            const billNumber = document.getElementById('docBillNumber').value.trim();
+            const docType = document.getElementById('docType').value;
+            const amount = parseFloat(document.getElementById('docAmount').value) || 0;
+            const company = document.getElementById('docCompany').value.trim();
+            const receiveDate = document.getElementById('docReceiveDate').value;
+            const note = document.getElementById('docNote').value.trim();
+
+            if (!billNumber) {
+                alert('กรุณาใส่เลขที่บิล');
+                return;
+            }
+
+            const newDoc = {
+                id: nextId++,
+                billNumber: billNumber,
+                type: docType,
+                amount: amount,
+                company: company,
+                receiveDate: receiveDate,
+                note: note,
+                currentStep: 0,
+                createdDate: new Date().toLocaleDateString('th-TH'),
+                lastUpdated: new Date().toLocaleDateString('th-TH')
+            };
+
+            documents.push(newDoc);
+            
+            await saveToSheets('create', newDoc);
+            
+            // Clear form
+            document.getElementById('docBillNumber').value = '';
+            document.getElementById('docAmount').value = '';
+            document.getElementById('docCompany').value = '';
+            document.getElementById('docReceiveDate').value = '';
+            document.getElementById('docNote').value = '';
+            document.getElementById('docType').value = 'ยา';
+
+            renderDashboard();
+            renderTable();
+            
+            alert('✅ เพิ่มเอกสารเรียบร้อยแล้ว!');
+        }
+
+        function showPage(pageName) {
+            if (!isLoggedIn) return;
+
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(pageName).classList.add('active');
+            
+            event.target.classList.add('active');
+            
+            if (pageName === 'table') {
+                renderTable();
+            }
+        }
+
+        async function deleteDocument(docId) {
+            if (!isLoggedIn) return;
+
+            if (confirm('คุณต้องการลบเอกสารนี้หรือไม่?')) {
+                documents = documents.filter(doc => doc.id !== docId);
+                
+                await saveToSheets('delete', { id: docId });
+                
+                renderDashboard();
+                renderTable();
+                alert('✅ ลบเอกสารเรียบร้อยแล้ว!');
+            }
+        }
+
+        function openEditModal(docId) {
+            if (!isLoggedIn) return;
+
+            const doc = documents.find(d => d.id === docId);
+            if (!doc) return;
+
+            editingDocId = docId;
+            
+            document.getElementById('editDocBillNumber').value = doc.billNumber;
+            document.getElementById('editDocType').value = doc.type;
+            document.getElementById('editDocAmount').value = doc.amount || '';
+            document.getElementById('editDocCompany').value = doc.company || '';
+            document.getElementById('editDocReceiveDate').value = doc.receiveDate || '';
+            document.getElementById('editDocNote').value = doc.note || '';
+            document.getElementById('editDocStatus').value = doc.currentStep;
+
+            renderModalSteps(doc.currentStep);
+            
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+            editingDocId = null;
+        }
+
+        async function saveEdit() {
+            if (!isLoggedIn || !editingDocId) return;
+
+            const docIndex = documents.findIndex(doc => doc.id === editingDocId);
+            if (docIndex === -1) return;
+
+            documents[docIndex].billNumber = document.getElementById('editDocBillNumber').value.trim();
+            documents[docIndex].type = document.getElementById('editDocType').value;
+            documents[docIndex].amount = parseFloat(document.getElementById('editDocAmount').value) || 0;
+            documents[docIndex].company = document.getElementById('editDocCompany').value.trim();
+            documents[docIndex].receiveDate = document.getElementById('editDocReceiveDate').value;
+            documents[docIndex].note = document.getElementById('editDocNote').value.trim();
+            documents[docIndex].currentStep = parseInt(document.getElementById('editDocStatus').value);
+            documents[docIndex].lastUpdated = new Date().toLocaleDateString('th-TH');
+
+            await saveToSheets('update', documents[docIndex]);
+            
+            renderDashboard();
+            renderTable();
+            closeModal();
+            
+            alert('✅ บันทึกการแก้ไขเรียบร้อยแล้ว!');
+        }
+
+        function renderModalSteps(currentStep) {
+            const stepsList = document.getElementById('modalStepsList');
+            stepsList.innerHTML = steps.map((step, index) => {
+                let statusClass = 'pending';
+                let icon = index + 1;
+                
+                if (index < currentStep) {
+                    statusClass = 'completed';
+                    icon = '✓';
+                } else if (index === currentStep) {
+                    statusClass = 'current';
+                }
+
+                return `
+                    <li class="step-item">
+                        <div class="step-icon ${statusClass}">${icon}</div>
+                        <div class="step-text ${statusClass}">${step}</div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function renderDashboard() {
+            if (!isLoggedIn) return;
+            updateStats();
+            renderStatusChart();
+            renderOverview();
+        }
+
+        function renderOverview() {
+            const overviewGrid = document.getElementById('overviewGrid');
+            const docsToShow = isSearching ? filteredDocuments : documents;
+            
+            if (isSearching && filteredDocuments.length === 0) {
+                overviewGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>🔍 ไม่พบผลการค้นหา</h3>
+                        <p>ลองปรับเงื่อนไขการค้นหาใหม่</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (docsToShow.length === 0) {
+                overviewGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📋 ยังไม่มีเอกสารในระบบ</h3>
+                        <p>เริ่มต้นโดยการเพิ่มเอกสารแรกของคุณ</p>
+                    </div>
+                `;
+                return;
+            }
+
+            overviewGrid.innerHTML = docsToShow.map(doc => {
+                const progress = ((doc.currentStep + 1) / steps.length) * 100;
+                
+                return `
+                    <div class="progress-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="document-title">เลขที่บิล: ${doc.billNumber}</h3>
+                                <p class="document-meta">
+                                    🏷️ ${doc.type}
+                                    ${doc.amount ? ` | 💰 ${doc.amount.toLocaleString()} บาท` : ''}
+                                    ${doc.company ? ` | 🏢 ${doc.company}` : ''}
+                                </p>
+                                <p class="document-meta">
+                                    📅 สร้าง: ${doc.createdDate}
+                                    ${doc.receiveDate ? ` | 📥 รับเข้า: ${new Date(doc.receiveDate).toLocaleDateString('th-TH')}` : ''}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span class="current-step">
+                                    ⏰ ${steps[doc.currentStep]}
+                                </span>
+                                <span class="progress-percentage">${Math.round(progress)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+
+                        ${doc.note ? `<div class="note-display">📝 <strong>หมายเหตุ:</strong> ${doc.note}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTable(docsToRender = null) {
+            if (!isLoggedIn) return;
+
+            const tableBody = document.getElementById('tableBody');
+            const docsToShow = docsToRender || documents;
+            
+            if (docsToShow.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                            📪 ยังไม่มีข้อมูลในระบบ
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = docsToShow.map(doc => {
+                const progress = ((doc.currentStep + 1) / steps.length) * 100;
+                
+                return `
+                    <tr>
+                        <td><strong>#${doc.id}</strong></td>
+                        <td>
+                            <strong>${doc.billNumber}</strong>
+                            ${doc.company ? `<br><small style="color: #666;">🏢 ${doc.company}</small>` : ''}
+                        </td>
+                        <td><span class="status-badge" style="background: #e3f2fd; color: #1565c0;">${doc.type}</span></td>
+                        <td style="text-align: right;">
+                            ${doc.amount ? `<strong>${doc.amount.toLocaleString()}</strong> บาท` : '-'}
+                        </td>
+                        <td><span class="status-badge status-${doc.currentStep}">${steps[doc.currentStep]}</span></td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="progress-bar" style="flex: 1; height: 8px; margin: 0;">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <span style="font-weight: 600; color: #333; min-width: 40px;">${Math.round(progress)}%</span>
+                            </div>
+                        </td>
+                        <td>${doc.receiveDate ? new Date(doc.receiveDate).toLocaleDateString('th-TH') : '-'}</td>
+                        <td>
+                            <div style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${doc.note || ''}">
+                                ${doc.note || '-'}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-edit" onclick="openEditModal(${doc.id})">
+                                    ✏️ แก้ไข
+                                </button>
+                                <button class="btn btn-delete" onclick="deleteDocument(${doc.id})">
+                                    🗑️ ลบ
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const total = documents.length;
+            const completed = documents.filter(doc => doc.currentStep === steps.length - 1).length;
+            const pending = total - completed;
+            const avgProgress = total > 0 ? Math.round(documents.reduce((sum, doc) => sum + ((doc.currentStep + 1) / steps.length * 100), 0) / total) : 0;
+
+            document.getElementById('totalDocs').textContent = total;
+            document.getElementById('completedDocs').textContent = completed;
+            document.getElementById('pendingDocs').textContent = pending;
+            document.getElementById('avgProgress').textContent = avgProgress + '%';
+        }
+
+        async function refreshData() {
+            if (!isLoggedIn) return;
+
+            await loadDataFromSheets();
+            alert('✅ รีเฟรชข้อมูลแล้ว!');
+        }
+
+        function initializeWithSampleData() {
+            if (documents.length === 0) {
+                const today = new Date().toISOString().split('T')[0];
+                const sampleDocs = [
+                    {
+                        id: nextId++,
+                        billNumber: 'INV-2024-001',
+                        type: 'ยา',
+                        amount: 25000,
+                        company: 'บริษัท เภสัชภัณฑ์ ABC จำกัด',
+                        receiveDate: today,
+                        note: 'ยาสำหรับผู้ป่วยโรคเบาหวาน',
+                        currentStep: 3,
+                        createdDate: new Date(Date.now() - 3*24*60*60*1000).toLocaleDateString('th-TH'),
+                        lastUpdated: new Date().toLocaleDateString('th-TH')
+                    },
+                    {
+                        id: nextId++,
+                        billNumber: 'INV-2024-002',
+                        type: 'วัสดุการแพทย์',
+                        amount: 15000,
+                        company: 'บริษัท อุปกรณ์การแพทย์ XYZ จำกัด',
+                        receiveDate: new Date(Date.now() - 1*24*60*60*1000).toISOString().split('T')[0],
+                        note: 'เครื่องมือผ่าตัดสำหรับห้องผ่าตัด',
+                        currentStep: 0,
+                        createdDate: new Date().toLocaleDateString('th-TH'),
+                        lastUpdated: new Date().toLocaleDateString('th-TH')
+                    },
+                    {
+                        id: nextId++,
+                        billNumber: 'INV-2024-003',
+                        type: 'วัสดุเภสัช',
+                        amount: 8500,
+                        company: 'บริษัท เคมีภัณฑ์ DEF จำกัด',
+                        receiveDate: new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0],
+                        note: 'สารเคมีสำหรับการวิเคราะห์ยา',
+                        currentStep: 10,
+                        createdDate: new Date(Date.now() - 7*24*60*60*1000).toLocaleDateString('th-TH'),
+                        lastUpdated: new Date(Date.now() - 1*24*60*60*1000).toLocaleDateString('th-TH')
+                    }
+                ];
+                
+                documents = sampleDocs;
+                saveToLocalStorage();
+                renderDashboard();
+                renderTable();
+            }
+        }
+
+        // Event listeners and initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 ระบบกำลังเริ่มต้น...');
+            
+            // Check login state first
+            const loggedIn = checkLoginState();
+            
+            if (loggedIn) {
+                // Load local data first, then try to load from sheets
+                loadFromLocalStorage();
+                loadDataFromSheets();
+                renderDashboard();
+            }
+            
+            // Login form handler
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value.trim();
+                    const password = document.getElementById('password').value;
+                    login(username, password);
+                });
+            }
+            
+            // Add document button
+            const addDocBtn = document.getElementById('addDocBtn');
+            if (addDocBtn) {
+                addDocBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addDocument();
+                });
+            }
+            
+            // Enter key support for add document
+            const docBillNumberInput = document.getElementById('docBillNumber');
+            if (docBillNumberInput) {
+                docBillNumberInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addDocument();
+                    }
+                });
+            }
+            
+            // Modal close buttons
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+            
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            if (cancelEditBtn) {
+                cancelEditBtn.addEventListener('click', closeModal);
+            }
+            
+            const saveEditBtn = document.getElementById('saveEditBtn');
+            if (saveEditBtn) {
+                saveEditBtn.addEventListener('click', saveEdit);
+            }
+            
+            // Status change in modal
+            const editDocStatus = document.getElementById('editDocStatus');
+            if (editDocStatus) {
+                editDocStatus.addEventListener('change', function() {
+                    renderModalSteps(parseInt(this.value));
+                });
+            }
+            
+            // Close modal when clicking outside
+            const editModal = document.getElementById('editModal');
+            if (editModal) {
+                editModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            console.log('✅ ระบบเริ่มต้นเสร็จสิ้น');
+        });
+
+        // Make functions globally available for onclick attributes
+        window.showPage = showPage;
+        window.openEditModal = openEditModal;
+        window.deleteDocument = deleteDocument;
+        window.refreshData = refreshData;
+        window.logout = logout;
+        window.searchDocuments = searchDocuments;
+        window.clearSearch = clearSearch;
+        window.searchTable = searchTable;
+        window.clearTableSearch = clearTableSearch;
+        
+    </script>
+</body>
+</html>
