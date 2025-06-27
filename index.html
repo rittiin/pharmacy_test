@@ -241,11 +241,22 @@
         }
 
         /* Dashboard Styles */
+        .dashboard-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+        }
+
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            margin-bottom: 30px;
         }
 
         .stat-card {
@@ -279,8 +290,14 @@
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
             padding: 30px;
-            margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .add-search-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
         }
 
         .chart-container {
@@ -783,6 +800,12 @@
                 grid-template-columns: 1fr;
             }
             
+            .dashboard-top,
+            .add-search-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
             .stats {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -862,88 +885,106 @@
 
             <!-- Dashboard Page -->
             <div id="dashboard" class="page active">
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalDocs">0</div>
-                        <div class="stat-label">เอกสารทั้งหมด</div>
+                <!-- Top Section: Stats + Status Chart -->
+                <div class="dashboard-top">
+                    <div class="stats-section">
+                        <h3 style="color: white; margin-bottom: 20px;">📊 สถิติข้อมูล</h3>
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalDocs">0</div>
+                                <div class="stat-label">เอกสารทั้งหมด</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="completedDocs">0</div>
+                                <div class="stat-label">เสร็จสิ้น</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="pendingDocs">0</div>
+                                <div class="stat-label">กำลังดำเนินการ</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="avgProgress">0%</div>
+                                <div class="stat-label">ความคืบหน้าเฉลี่ย</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="completedDocs">0</div>
-                        <div class="stat-label">เสร็จสิ้น</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="pendingDocs">0</div>
-                        <div class="stat-label">กำลังดำเนินการ</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="avgProgress">0%</div>
-                        <div class="stat-label">ความคืบหน้าเฉลี่ย</div>
+
+                    <!-- Status Chart Section -->
+                    <div class="status-chart">
+                        <h3 style="margin-bottom: 20px; color: #333;">📊 สถานะเอกสาร</h3>
+                        <div class="chart-container" id="statusChart">
+                            <!-- Chart bars will be rendered here -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Status Chart Section -->
-                <div class="status-chart">
-                    <h3 style="margin-bottom: 20px; color: #333;">📊 สถานะเอกสาร</h3>
-                    <div class="chart-container" id="statusChart">
-                        <!-- Chart bars will be rendered here -->
+                <!-- Add Document + Search Section -->
+                <div class="add-search-container">
+                    <div class="add-document">
+                        <h3 style="margin-bottom: 20px; color: #333;">➕ เพิ่มเอกสารใหม่</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="docBillNumber">เลขที่บิล *</label>
+                                <input type="text" id="docBillNumber" placeholder="เช่น INV-2024-001">
+                            </div>
+                            <div class="input-group">
+                                <label for="docType">ประเภท</label>
+                                <select id="docType">
+                                    <option value="ยา">ยา</option>
+                                    <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                                    <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="docAmount">จำนวนเงิน (บาท)</label>
+                                <input type="number" id="docAmount" placeholder="เช่น 15000" step="0.01">
+                            </div>
+                            <div class="input-group">
+                                <label for="docCompany">บริษัท</label>
+                                <input type="text" id="docCompany" placeholder="เช่น บริษัท ABC จำกัด">
+                            </div>
+                            <div class="input-group">
+                                <label for="docReceiveDate">วันที่รับเข้า/วันก่อหนี้</label>
+                                <input type="date" id="docReceiveDate">
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label for="docNote">หมายเหตุ</label>
+                            <textarea id="docNote" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+                        </div>
+                        <button class="btn btn-primary" id="addDocBtn">
+                            ➕ เพิ่มเอกสาร
+                        </button>
                     </div>
-                </div>
 
-                <div class="add-document">
-                    <h3 style="margin-bottom: 20px; color: #333;">➕ เพิ่มเอกสารใหม่</h3>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="docBillNumber">เลขที่บิล *</label>
-                            <input type="text" id="docBillNumber" placeholder="เช่น INV-2024-001">
+                    <!-- Search Section for Dashboard -->
+                    <div class="search-section">
+                        <h3 style="margin-bottom: 20px; color: #333;">🔍 ค้นหาและกรองข้อมูล</h3>
+                        <div class="search-grid">
+                            <div class="input-group">
+                                <label for="dashboardSearchBill">เลขที่บิล</label>
+                                <input type="text" id="dashboardSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
+                            </div>
+                            <div class="input-group">
+                                <label for="dashboardSearchType">ประเภท</label>
+                                <select id="dashboardSearchType" class="search-input">
+                                    <option value="">ทุกประเภท</option>
+                                    <option value="ยา">ยา</option>
+                                    <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                                    <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="dashboardSearchCompany">บริษัท</label>
+                                <input type="text" id="dashboardSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label for="docType">ประเภท</label>
-                            <select id="docType">
-                                <option value="ยา">ยา</option>
-                                <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
-                                <option value="วัสดุเภสัช">วัสดุเภสัช</option>
-                                <option value="อื่นๆ">อื่นๆ</option>
-                            </select>
+                        <div class="search-buttons">
+                            <button class="btn btn-search" onclick="searchDocuments()">🔍 ค้นหา</button>
+                            <button class="btn btn-clear" onclick="clearSearch()">🗑️ ล้างการค้นหา</button>
                         </div>
-                        <div class="input-group">
-                            <label for="docAmount">จำนวนเงิน (บาท)</label>
-                            <input type="number" id="docAmount" placeholder="เช่น 15000" step="0.01">
-                        </div>
-                        <div class="input-group">
-                            <label for="docCompany">บริษัท</label>
-                            <input type="text" id="docCompany" placeholder="เช่น บริษัท ABC จำกัด">
-                        </div>
-                        <div class="input-group">
-                            <label for="docReceiveDate">วันที่รับเข้า/วันก่อหนี้</label>
-                            <input type="date" id="docReceiveDate">
-                        </div>
-                    </div>
-                    <div class="input-group" style="margin-bottom: 20px;">
-                        <label for="docNote">หมายเหตุ</label>
-                        <textarea id="docNote" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
-                    </div>
-                    <button class="btn btn-primary" id="addDocBtn">
-                        ➕ เพิ่มเอกสาร
-                    </button>
-                </div>
-
-                <!-- Search Section for Dashboard -->
-                <div class="search-section">
-                    <h3 style="margin-bottom: 20px; color: #333;">🔍 ค้นหาและกรองข้อมูล</h3>
-                    <div class="search-grid">
-                        <input type="text" id="dashboardSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
-                        <select id="dashboardSearchType" class="search-input">
-                            <option value="">ทุกประเภท</option>
-                            <option value="ยา">ยา</option>
-                            <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
-                            <option value="วัสดุเภสัช">วัสดุเภสัช</option>
-                            <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
-                        <input type="text" id="dashboardSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
-                    </div>
-                    <div class="search-buttons">
-                        <button class="btn btn-search" onclick="searchDocuments()">🔍 ค้นหา</button>
-                        <button class="btn btn-clear" onclick="clearSearch()">🗑️ ล้างการค้นหา</button>
                     </div>
                 </div>
 
@@ -962,15 +1003,24 @@
                 <div class="search-section">
                     <h3 style="margin-bottom: 20px; color: #333;">🔍 ค้นหาเอกสาร</h3>
                     <div class="search-grid">
-                        <input type="text" id="tableSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
-                        <select id="tableSearchType" class="search-input">
-                            <option value="">ทุกประเภท</option>
-                            <option value="ยา">ยา</option>
-                            <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
-                            <option value="วัสดุเภสัช">วัสดุเภสัช</option>
-                            <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
-                        <input type="text" id="tableSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
+                        <div class="input-group">
+                            <label for="tableSearchBill">เลขที่บิล</label>
+                            <input type="text" id="tableSearchBill" class="search-input" placeholder="ค้นหาเลขที่บิล...">
+                        </div>
+                        <div class="input-group">
+                            <label for="tableSearchType">ประเภท</label>
+                            <select id="tableSearchType" class="search-input">
+                                <option value="">ทุกประเภท</option>
+                                <option value="ยา">ยา</option>
+                                <option value="วัสดุการแพทย์">วัสดุการแพทย์</option>
+                                <option value="วัสดุเภสัช">วัสดุเภสัช</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="tableSearchCompany">บริษัท</label>
+                            <input type="text" id="tableSearchCompany" class="search-input" placeholder="ค้นหาบริษัท...">
+                        </div>
                     </div>
                     <div class="search-buttons">
                         <button class="btn btn-search" onclick="searchTable()">🔍 ค้นหา</button>
@@ -1236,13 +1286,14 @@
             const type = document.getElementById('dashboardSearchType').value;
             const company = document.getElementById('dashboardSearchCompany').value.trim().toLowerCase();
 
+            // Allow search even if only one field is filled
             if (!billNumber && !type && !company) {
                 alert('กรุณาใส่เงื่อนไขการค้นหาอย่างน้อย 1 รายการ');
                 return;
             }
 
             filteredDocuments = documents.filter(doc => {
-                const matchBill = !billNumber || doc.billNumber.toLowerCase().includes(billNumber);
+                const matchBill = !billNumber || (doc.billNumber && doc.billNumber.toLowerCase().includes(billNumber));
                 const matchType = !type || doc.type === type;
                 const matchCompany = !company || (doc.company && doc.company.toLowerCase().includes(company));
                 
@@ -1252,6 +1303,8 @@
             isSearching = true;
             updateOverviewTitle();
             renderOverview();
+            
+            console.log('Dashboard search results:', filteredDocuments.length, 'documents found');
         }
 
         function clearSearch() {
@@ -1270,8 +1323,9 @@
             const type = document.getElementById('tableSearchType').value;
             const company = document.getElementById('tableSearchCompany').value.trim().toLowerCase();
 
+            // Allow search with empty fields (show all if no criteria)
             filteredDocuments = documents.filter(doc => {
-                const matchBill = !billNumber || doc.billNumber.toLowerCase().includes(billNumber);
+                const matchBill = !billNumber || (doc.billNumber && doc.billNumber.toLowerCase().includes(billNumber));
                 const matchType = !type || doc.type === type;
                 const matchCompany = !company || (doc.company && doc.company.toLowerCase().includes(company));
                 
@@ -1279,6 +1333,7 @@
             });
 
             renderTable(filteredDocuments);
+            console.log('Table search results:', filteredDocuments.length, 'documents found');
         }
 
         function clearTableSearch() {
@@ -1875,6 +1930,42 @@
                     }
                 });
             }
+            
+            // Enter key support for search in dashboard
+            const dashboardSearchInputs = [
+                'dashboardSearchBill',
+                'dashboardSearchCompany'
+            ];
+            
+            dashboardSearchInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            searchDocuments();
+                        }
+                    });
+                }
+            });
+            
+            // Enter key support for search in table
+            const tableSearchInputs = [
+                'tableSearchBill',
+                'tableSearchCompany'
+            ];
+            
+            tableSearchInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            searchTable();
+                        }
+                    });
+                }
+            });
             
             // Modal close buttons
             const closeModalBtn = document.getElementById('closeModalBtn');
